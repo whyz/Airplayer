@@ -19,10 +19,7 @@ class ShowtimeMediaBackend(BaseMediaBackend):
         self._TMP_DIR = tempfile.mkdtemp()
         
         """
-        Make sure the folder is world readable, since XBMC might be running as a
-        different user then Airplayer.
-        
-        As pointed out at https://github.com/PascalW/Airplayer/issues#issue/9
+        Make sure the folder is world readable
         """
         os.chmod(self._TMP_DIR, 0755)
         
@@ -30,7 +27,7 @@ class ShowtimeMediaBackend(BaseMediaBackend):
     
     def _http_api_request(self, command, parameters=None):
         """
-        Perform a request to the XBMC http api.
+        Perform a request to the Showtime http api.
         @return raw request result or None in case of error
         """
         
@@ -43,7 +40,7 @@ class ShowtimeMediaBackend(BaseMediaBackend):
         if parameters:
             url = url + "?" + urllib.urlencode(parameters)        
 
-        self.log.info("_http_api_request url %s", url)
+        self.log.debug("_http_api_request url %s", url)
 
         req = urllib2.Request(url)
         return self._http_request(req)
@@ -94,21 +91,19 @@ class ShowtimeMediaBackend(BaseMediaBackend):
         filename = 'picture%d.jpg' % int(time.time())
         path = os.path.join(self._TMP_DIR, filename)
         
-        """
-        write mode 'b' is needed for Windows compatibility, since we're writing a binary file here.
-        """
         f = open(path, 'wb')
         f.write(data)
         f.close()
 
         path = "file://" + path
 
-        self.log.info("filename %s", path);
+        self.log.debug("filename %s", path);
         self.open_url(path)
         
     def open_url(self, url):
         """
         Open file at the given location.
+        Does not work very well with showtime at the moment.
         """
         self._http_api_request('open', {'url': url})
  
@@ -167,7 +162,6 @@ class ShowtimeMediaBackend(BaseMediaBackend):
         
         if currenttime:
             duration = self._http_api_request("prop/global/media/current/metadata/duration")
-#            self.log.info("position: %s/%s", currenttime, duration)
             return float(currenttime.strip()), float(duration.strip())
 
         return None, None

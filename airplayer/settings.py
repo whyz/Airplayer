@@ -9,7 +9,7 @@ AIRPLAYER_PORT = 6002
 Set your media backend.
 Supported media backends are XBMC, Plex and Boxee.
 """
-MEDIA_BACKEND = 'XBMC'
+MEDIA_BACKEND = 'Showtime'
 
 """
 Default ports:
@@ -18,7 +18,7 @@ Plex: 3000
 Boxee: 8800
 """
 MEDIA_BACKEND_HOST = '127.0.0.1'
-MEDIA_BACKEND_PORT = 8080
+MEDIA_BACKEND_PORT = 42000
 
 """
 If your media backend doesn't require authentication,
@@ -28,8 +28,8 @@ Example:
 MEDIA_BACKEND_USERNAME = None
 MEDIA_BACKEND_PASSWORD = None
 """
-MEDIA_BACKEND_USERNAME = 'username'
-MEDIA_BACKEND_PASSWORD = 'password'
+MEDIA_BACKEND_USERNAME = None
+MEDIA_BACKEND_PASSWORD = None
 
 """
 This is the name by which Airplayer will identify itself to other Airplay

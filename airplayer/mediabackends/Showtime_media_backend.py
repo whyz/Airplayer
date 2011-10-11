@@ -7,10 +7,16 @@ import shutil
 import os
 
 import utils
+import Image
+from PIL.ExifTags import TAGS
 
 from base_media_backend import BaseMediaBackend
 
 class ShowtimeMediaBackend(BaseMediaBackend):
+    """
+    The Showtime backend is a backend for HTS Showtime, available here: https://github.com/andoma/showtime
+    In addition to the standard dependencies, this backend uses Python Image Library. The dependency has been added to requirements.txt 
+    """
     
     def __init__(self, host, port, username=None, password=None):
         super(ShowtimeMediaBackend, self).__init__(host, port, username, password)
@@ -87,6 +93,7 @@ class ShowtimeMediaBackend(BaseMediaBackend):
         Show a picture.
         @param data raw picture data.
         """
+
         utils.clear_folder(self._TMP_DIR)
         filename = 'picture%d.jpg' % int(time.time())
         path = os.path.join(self._TMP_DIR, filename)
@@ -94,6 +101,23 @@ class ShowtimeMediaBackend(BaseMediaBackend):
         f = open(path, 'wb')
         f.write(data)
         f.close()
+
+        img = Image.open(path)
+        """
+        The image is loaded and saved because Showtimes image viewer can't handle many of the image that come straight from an iPhone.
+        Since PIL does not retain the Exif data, we must rotate the image if needed instead.
+        """
+        exif = img._getexif()
+        if exif != None:
+            for tag, value in exif.items():
+                decoded = TAGS.get(tag, tag)
+                if decoded == 'Orientation':
+                    if value == 3: img = img.rotate(180)
+                    if value == 6: img = img.rotate(270)
+                    if value == 8: img = img.rotate(90)
+                    break
+                
+        img.save(path);
 
         path = "file://" + path
 
